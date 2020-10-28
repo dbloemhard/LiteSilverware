@@ -152,6 +152,9 @@
 // *************quick flashing LED when RSSI level drops below set level
 // *************value is packets per second for Bayang, percentage of full (2047) RSSI when RSSI is returned as channel 9 in SBUS
 #define RSSI_WARNING_LEVEL 40
+// ******* Show a warning message on the OSD when RSSI falls too low - requires that the OSD chip has been flashed with required update
+#define OSD_RSSI_WARNING
+
 
 
 //**********************************************************************************************************************

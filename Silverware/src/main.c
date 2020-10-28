@@ -146,13 +146,6 @@ int binding_while_armed = 1;
 float lipo_cell_count = 1;
 
 float rssi_val = 0;
-// warn of low RSSI through the status LED
-#ifdef RSSI_WARNING_LEVEL
-//extern 
-int rssi_warning;
-int osd_rssi_warning;
-unsigned long rxblinktime = 0;
-#endif
 
 //Experimental Flash Memory Feature
 int flash_feature_1 = 0;
@@ -682,7 +675,8 @@ if ( LED_NUMBER > 0)
             else
             {
 #ifdef RSSI_WARNING_LEVEL
-							if ( rssi_warning )
+							// RSSI of zero is failsafe (above)
+							if ( rssi_val > 0 &&  rssi_val <= RSSI_WARNING_LEVEL )
 								{
 										ledflash ( 100000, 15);
 								}
@@ -844,19 +838,6 @@ rgb_dma_start();
     {
 #endif
 
-#ifdef RSSI_WARNING_LEVEL
-				if (rssi_warning)
-				{
-					//rxblinktime will be 0 at first
-					if (gettime() - rxblinktime > 500000 )
-					{
-							osd_rssi_warning = !osd_rssi_warning;
-							rxblinktime = gettime();
-					}
-				}
-				else
-					osd_rssi_warning = 0;
-#endif
         osd_setting();
 
     #ifdef f042_1s_bayang

@@ -27,9 +27,12 @@ extern float pidkd[PIDNUMBER];
 extern int number_of_increments[3][3];
 extern unsigned long lastlooptime;
 extern float rssi_val;
-#ifdef RSSI_WARNING_LEVEL
-extern int osd_rssi_warning;
+#ifdef OSD_RSSI_WARNING
+unsigned char show_rssi_warning;
+unsigned long blinktime=0;
 #endif
+unsigned char low_rssi=40;
+
 unsigned char profileAB =0;
 
 unsigned char powerlevel = 0;
@@ -200,11 +203,19 @@ void osd_setting()
                     osd_data[8] = cur >> 8;
                     osd_data[9] = cur & 0xFF;
                 #endif
-								#ifdef RSSI_WARNING_LEVEL
-									  osd_data[10] = osd_rssi_warning;
-								#else
-										osd_data[10] = 0;
-								#endif    
+								#ifdef OSD_RSSI_WARNING
+										if (rssi_val > 0 && rssi_val < low_rssi)
+										{
+											if (gettime() - blinktime > 500000 )
+											{
+													show_rssi_warning = !show_rssi_warning;
+													blinktime = gettime();
+											}
+											osd_data[10] = show_rssi_warning;
+										}
+										else
+								#endif
+											osd_data[10] = 0;
                     osd_data[11] = 0;
                     for (uint8_t i = 0; i < 11; i++)
                         osd_data[11] += osd_data[i];  
@@ -254,7 +265,7 @@ void osd_setting()
                     osd_data[2] = 0;
                     osd_data[3] = vol >> 8;
                     osd_data[4] = vol & 0xFF;
-										osd_data[5] = rssi_val;          
+										osd_data[5] = rx_switch;         
                     osd_data[6] = 0;
                     osd_data[6] = (aux[CHAN_6] << 0) | (aux[CHAN_7] << 1) | (aux[CHAN_8] << 2);
        
@@ -265,12 +276,20 @@ void osd_setting()
                     osd_data[8] = cur >> 8;
                     osd_data[9] = cur & 0xFF;
                 #endif
-								#ifdef RSSI_WARNING_LEVEL
-									  osd_data[10] = osd_rssi_warning;
-								#else
-										osd_data[10] = 0;
-								#endif    
-                    osd_data[11] = 0;
+								#ifdef OSD_RSSI_WARNING
+										if (rssi_val > 0 && rssi_val < low_rssi)
+										{
+											if (gettime() - blinktime > 500000 )
+											{
+													show_rssi_warning = !show_rssi_warning;
+													blinktime = gettime();
+											}
+											osd_data[10] = show_rssi_warning;
+										}
+										else
+								#endif
+											osd_data[10] = 0;
+										osd_data[11] = 0;
                     for (uint8_t i = 0; i < 11; i++)
                         osd_data[11] += osd_data[i];  
                     
@@ -788,6 +807,14 @@ void osd_setting()
                         break;
                         
                     case 4:
+									#ifdef OSD_RSSI_WARNING
+                        low_rssi += 5;
+                        if(low_rssi>90)
+                            low_rssi=0;
+                        break;
+                        
+                    case 5:
+									#endif
                         showcase = 1;
                         displayMenu = displayMenuHead;
                         currentMenu = setMenuHead;
@@ -808,6 +835,14 @@ void osd_setting()
                         break;
                         
                     case 5:
+								#ifdef OSD_RSSI_WARNING
+                        low_rssi += 5;
+                        if(low_rssi>90)
+                            low_rssi=0;
+                        break;
+                        
+                    case 6:
+								#endif
                         showcase = 1;
                         displayMenu = displayMenuHead;
                         currentMenu = setMenuHead;
@@ -834,6 +869,14 @@ void osd_setting()
                         break;
                         
                     case 6:
+								#ifdef OSD_RSSI_WARNING
+                        low_rssi += 5;
+                        if(low_rssi>90)
+                            low_rssi=0;
+                        break;
+                        
+                    case 7:
+								#endif
                         showcase = 1;
                         displayMenu = displayMenuHead;
                         currentMenu = setMenuHead;
@@ -873,6 +916,14 @@ void osd_setting()
                         if(low_battery<28)
                             low_battery=40;
                         break;
+									#ifdef OSD_RSSI_WARNING
+                    case 4:
+                        if(low_rssi==0)
+                            low_rssi=90;
+												else
+														low_rssi -= 5;
+                        break;    
+									#endif
                 #endif
                 #ifdef f042_1s_bl
                     case 3:
@@ -887,6 +938,13 @@ void osd_setting()
                         if(low_battery<28)
                             low_battery=40;
                         break;
+									#ifdef OSD_RSSI_WARNING
+                    case 5:
+                        low_rssi -= 5;
+                        if(low_rssi<0)
+                            low_rssi=90;
+                        break;
+									#endif
                 #endif
                         
                 #ifdef f042_2s_bl
@@ -909,6 +967,13 @@ void osd_setting()
                         if(low_battery<55)
                             low_battery=80;
                         break;
+									#ifdef OSD_RSSI_WARNING
+                    case 6:
+                        low_rssi -= 5;
+                        if(low_rssi<0)
+                            low_rssi=90;
+                        break;
+                   #endif
                 #endif
                 }
                 
@@ -928,7 +993,7 @@ void osd_setting()
             #endif
                 osd_data[6] = turtle_l;
                 osd_data[7] = low_battery;
-                osd_data[8] = 0;
+                osd_data[8] = low_rssi;
                 osd_data[9] = 0;
                 osd_data[10] = 0;
                 osd_data[11] = 0;
@@ -1065,15 +1130,27 @@ void osdMenuInit(void)
     smartaudioMenuHead = smartaudioMenu;
     
 #ifdef f042_1s_bl
-    displayMenu = createMenu(5,5);
+	#ifdef OSD_RSSI_WARNING
+    displayMenu = createMenu(6,5);
+	#else
+    displayMenu = createMenu(5,5);		
+	#endif
 #endif
     
 #ifdef f042_2s_bl
-    displayMenu = createMenu(6,5);
+	#ifdef OSD_RSSI_WARNING
+    displayMenu = createMenu(7,5);
+	#else
+    displayMenu = createMenu(6,5);		
+	#endif
 #endif
 
 #ifdef f042_1s_bayang
-    displayMenu = createMenu(4,5);
+	#ifdef OSD_RSSI_WARNING
+    displayMenu = createMenu(5,5);
+	#else
+    displayMenu = createMenu(4,5);		
+	#endif
 #endif
 
     displayMenuHead = displayMenu;
@@ -1086,5 +1163,3 @@ void osdMenuInit(void)
 
 
 #endif
-
-

@@ -24,6 +24,7 @@ extern unsigned char vol_l;
 extern unsigned char curr_l;
 extern unsigned char turtle_l;
 extern unsigned char low_battery;
+extern unsigned char low_rssi;
 
 extern unsigned char profileAB;
 extern unsigned int ratesValue;
@@ -85,25 +86,26 @@ void flash_save( void) {
     writeword(addresscount++, channel);
     
 #ifdef f042_1s_bayang
-    writeword(38,led_config);
-    writeword(39,T8SG_config);
-    writeword(40,tx_config);
-    writeword(41,mode_config);
+    writeword(37,led_config);
+    writeword(38,T8SG_config);
+    writeword(39,tx_config);
+    writeword(40,mode_config);
 #else 
-    writeword(40,(motorDir[0]|motorDir[1]|motorDir[2]|motorDir[3]));
-    writeword(41, motorDir[0] | (motorDir[1]<<8) |(motorDir[2]<<16) |(motorDir[3]<<24));
+    writeword(39,(motorDir[0]|motorDir[1]|motorDir[2]|motorDir[3]));
+    writeword(40, motorDir[0] | (motorDir[1]<<8) |(motorDir[2]<<16) |(motorDir[3]<<24));
 #endif
-    writeword(42,rx_switch);
-    writeword(43,low_bat_l);
-    writeword(44,mode_l);
-    writeword(45,vol_l);
+    writeword(41,rx_switch);
+    writeword(42,low_bat_l);
+    writeword(43,mode_l);
+    writeword(44,vol_l);
     
 #ifdef f042_2s_bl
-    writeword(46,curr_l);
+    writeword(45,curr_l);
 #endif
 
-    writeword(47,turtle_l);
-    writeword(48,low_battery);
+    writeword(46,turtle_l);
+    writeword(47,low_battery);
+    writeword(48,low_rssi);
     writeword(49,profileAB);
     
     
@@ -219,20 +221,20 @@ void flash_load( void) {
          channel = 0;
      
 #ifdef f042_1s_bayang
-     led_config = fmc_read(38);
+     led_config = fmc_read(37);
      if(led_config>1)
          led_config=0;
-     T8SG_config = fmc_read(39);  
+     T8SG_config = fmc_read(38);  
      if(T8SG_config>1)
          T8SG_config=0;
-     tx_config = fmc_read(40);
+     tx_config = fmc_read(39);
      if(tx_config>1)
          tx_config=0;
-     mode_config = fmc_read(41);
+     mode_config = fmc_read(40);
 #else
-     save_motor_dir_identifier =  fmc_read(40);
+     save_motor_dir_identifier =  fmc_read(39);
      
-     int temp = fmc_read(41);
+     int temp = fmc_read(40);
      for ( int i = 0 ; i < 4; i++)
      {
         save_motor_dir_temp[i] =  temp>>(i*8);        
@@ -245,18 +247,19 @@ void flash_load( void) {
         }
      }
 #endif
-     rx_switch = fmc_read(42);	
+     rx_switch = fmc_read(41);	
      
-     low_bat_l = fmc_read(43);
-     mode_l = fmc_read(44);
-     vol_l = fmc_read(45);
+     low_bat_l = fmc_read(42);
+     mode_l = fmc_read(43);
+     vol_l = fmc_read(44);
      
 #ifdef f042_2s_bl
-     curr_l = fmc_read(46);
+     curr_l = fmc_read(45);
 #endif
      
-     turtle_l = fmc_read(47);
-     low_battery = fmc_read(48);
+     turtle_l = fmc_read(46);
+     low_battery = fmc_read(47);
+     low_rssi = fmc_read(48);
      profileAB = fmc_read(49);
      
  #ifdef RX_BAYANG_PROTOCOL_TELEMETRY_AUTOBIND  
@@ -326,16 +329,3 @@ extern int rx_bind_enable;
     }
     
 }
-
-
-
-
-
-
-
-
-
-
-
-
-

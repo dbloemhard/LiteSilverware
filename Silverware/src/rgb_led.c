@@ -42,7 +42,7 @@ float r_filt, g_filt, b_filt;
 
 // warn of low RSSI through the status LED
 #ifdef RSSI_WARNING_LEVEL
-extern int rssi_warning;
+extern float rssi_val;
 #endif
 
 // sets all leds to a brightness
@@ -310,8 +310,8 @@ else
 			else 
 			{
 #ifdef RSSI_WARNING_LEVEL
-			if ( rssi_warning )
-				{
+// RSSI of zero is failsafe (above)
+				if ( rssi_val > 0 &&  rssi_val <= RSSI_WARNING_LEVEL )				{
 						rgb_ledflash_twin( RGB( 255 , 0 , 0 ), RGB( 0 , 0 , 255 ), 1000000);
 				}
 			else

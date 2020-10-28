@@ -552,10 +552,6 @@ unsigned long secondtimer;
 
 int failsafe = 0;
 
-// warn of low RSSI through the status LED
-#ifdef RSSI_WARNING_LEVEL
-extern int rssi_warning;
-#endif
 extern float rssi_val;
 
 unsigned int skipchannel = 0;
@@ -740,10 +736,6 @@ void checkrx(void)
 				  rssi_val = packetpersecond / 2;
 					if (rssi_val > 255)
 							rssi_val = 255;
-					// warn of low RSSI through the status LED
-#ifdef RSSI_WARNING_LEVEL
-					rssi_warning = (packetpersecond > 0 && packetpersecond <= RSSI_WARNING_LEVEL) ? 1 : 0;
-#endif				
       }
 
 
