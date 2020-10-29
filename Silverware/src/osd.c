@@ -50,6 +50,7 @@ unsigned char mode_l=21;
 unsigned char vol_l=23;
 unsigned char curr_l = 23;
 unsigned char turtle_l=18;
+unsigned char crosshair_l=13;
 unsigned char tx_config=0;
 unsigned char mode_config=0;
 unsigned char led_config=0;
@@ -187,14 +188,14 @@ void osd_setting()
                 {
                     osd_data[0] = 0x0f;
                     osd_data[0] |=showcase << 4;
-                    osd_data[1] = aux[CHAN_5];
-                    osd_data[2] = 0;
+                    osd_data[1] = aux[ARMING];
+                    osd_data[2] = aux[HIDEOSD];
                     osd_data[3] = vol >> 8;
                     osd_data[4] = vol & 0xFF;
                     osd_data[5] = rx_switch;
                     
                     osd_data[6] = 0;
-                    osd_data[6] = (aux[CHAN_6] << 0);
+                    osd_data[6] = (aux[LEVELMODE] << 0);
        
                     osd_data[7] = rssi_val;
                     osd_data[8] = 0;
@@ -261,13 +262,13 @@ void osd_setting()
                 {
                     osd_data[0] = 0x0f;
                     osd_data[0] |=showcase << 4;
-                    osd_data[1] = aux[CHAN_5];
-                    osd_data[2] = 0;
+                    osd_data[1] = aux[ARMING];
+                    osd_data[2] = aux[HIDEOSD];
                     osd_data[3] = vol >> 8;
                     osd_data[4] = vol & 0xFF;
 										osd_data[5] = rx_switch;         
                     osd_data[6] = 0;
-                    osd_data[6] = (aux[CHAN_6] << 0) | (aux[CHAN_7] << 1) | (aux[CHAN_8] << 2);
+                    osd_data[6] = (aux[LEVELMODE] << 0) | (aux[RACEMODE] << 1) | (aux[HORIZON] << 2);
        
                     osd_data[7] = rssi_val;
 										osd_data[8] = 0;
@@ -814,6 +815,18 @@ void osd_setting()
                         break;
                         
                     case 5:
+												// if you have the OSD changes flashed you also have the crosshair option
+												if(crosshair_l==0)
+													crosshair_l=6;
+												else
+												{
+													crosshair_l++;
+													if(crosshair_l>20)
+															crosshair_l=0;
+												}
+                        break;
+												
+										case 6:
 									#endif
                         showcase = 1;
                         displayMenu = displayMenuHead;
@@ -841,7 +854,19 @@ void osd_setting()
                             low_rssi=0;
                         break;
                         
-                    case 6:
+                     case 6:
+												// if you have the OSD changes flashed you also have the crosshair option
+												if(crosshair_l==0)
+													crosshair_l=6;
+												else
+												{
+													crosshair_l++;
+													if(crosshair_l>20)
+															crosshair_l=0;
+												}
+                        break;
+												
+										case 7:
 								#endif
                         showcase = 1;
                         displayMenu = displayMenuHead;
@@ -876,6 +901,18 @@ void osd_setting()
                         break;
                         
                     case 7:
+												// if you have the OSD changes flashed you also have the crosshair option
+												if(crosshair_l==0)
+													crosshair_l=6;
+												else
+												{
+													crosshair_l++;
+													if(crosshair_l>20)
+															crosshair_l=0;
+												}
+                        break;
+												
+										case 8:
 								#endif
                         showcase = 1;
                         displayMenu = displayMenuHead;
@@ -923,6 +960,18 @@ void osd_setting()
 												else
 														low_rssi -= 5;
                         break;    
+                    case 5:
+												// if you have the OSD changes flashed you also have the crosshair option
+												if(crosshair_l==0)
+													crosshair_l=20;
+												else
+												{
+													crosshair_l--;
+													if(crosshair_l<6)
+															crosshair_l=0;
+												}
+                        break;
+												
 									#endif
                 #endif
                 #ifdef f042_1s_bl
@@ -943,6 +992,18 @@ void osd_setting()
                         low_rssi -= 5;
                         if(low_rssi<0)
                             low_rssi=90;
+                        break;
+
+                    case 6:
+												// if you have the OSD changes flashed you also have the crosshair option
+												if(crosshair_l==0)
+													crosshair_l=20;
+												else
+												{
+													crosshair_l--;
+													if(crosshair_l<6)
+															crosshair_l=0;
+												}
                         break;
 									#endif
                 #endif
@@ -973,6 +1034,18 @@ void osd_setting()
                         if(low_rssi<0)
                             low_rssi=90;
                         break;
+												
+                    case 7:
+												// if you have the OSD changes flashed you also have the crosshair option
+												if(crosshair_l==0)
+													crosshair_l=20;
+												else
+												{
+													crosshair_l--;
+													if(crosshair_l<6)
+															crosshair_l=0;
+												}
+                        break;
                    #endif
                 #endif
                 }
@@ -994,7 +1067,7 @@ void osd_setting()
                 osd_data[6] = turtle_l;
                 osd_data[7] = low_battery;
                 osd_data[8] = low_rssi;
-                osd_data[9] = 0;
+                osd_data[9] = crosshair_l;
                 osd_data[10] = 0;
                 osd_data[11] = 0;
                 for (uint8_t i = 0; i < 11; i++)
@@ -1131,7 +1204,7 @@ void osdMenuInit(void)
     
 #ifdef f042_1s_bl
 	#ifdef OSD_RSSI_WARNING
-    displayMenu = createMenu(6,5);
+    displayMenu = createMenu(7,5);
 	#else
     displayMenu = createMenu(5,5);		
 	#endif
@@ -1139,7 +1212,7 @@ void osdMenuInit(void)
     
 #ifdef f042_2s_bl
 	#ifdef OSD_RSSI_WARNING
-    displayMenu = createMenu(7,5);
+    displayMenu = createMenu(8,5);
 	#else
     displayMenu = createMenu(6,5);		
 	#endif
@@ -1147,7 +1220,7 @@ void osdMenuInit(void)
 
 #ifdef f042_1s_bayang
 	#ifdef OSD_RSSI_WARNING
-    displayMenu = createMenu(5,5);
+    displayMenu = createMenu(6,5);
 	#else
     displayMenu = createMenu(4,5);		
 	#endif
