@@ -189,7 +189,7 @@ void osd_setting()
                     osd_data[0] = 0x0f;
                     osd_data[0] |=showcase << 4;
                     osd_data[1] = aux[ARMING];
-                    osd_data[2] = aux[HIDEOSD];
+                    osd_data[2] = aux[SHOWCROSSHAIRS];
                     osd_data[3] = vol >> 8;
                     osd_data[4] = vol & 0xFF;
                     osd_data[5] = rx_switch;
@@ -263,7 +263,7 @@ void osd_setting()
                     osd_data[0] = 0x0f;
                     osd_data[0] |=showcase << 4;
                     osd_data[1] = aux[ARMING];
-                    osd_data[2] = aux[HIDEOSD];
+                    osd_data[2] = aux[SHOWCROSSHAIRS];
                     osd_data[3] = vol >> 8;
                     osd_data[4] = vol & 0xFF;
 										osd_data[5] = rx_switch;         

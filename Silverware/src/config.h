@@ -127,7 +127,8 @@
 #define PIDPROFILE CHAN_OFF                //For switching stickAccelerator & stickTransition profiles on pid.c page
 #define RATES CHAN_ON
 #define LEDS_ON CHAN_10
-#define HIDEOSD CHAN_9                     //for disabling the OSD (with appropriate OSD firmware flashed)
+#define SHOWCROSSHAIRS CHAN_9                     //Toggle crosshairs with channel (with appropriate OSD firmware flashed)
+//#define SHOWCROSSHAIRS CHAN_ON
 
 #define Roll     0
 #define Pitch    1
